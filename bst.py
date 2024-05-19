@@ -47,10 +47,9 @@ class BST:
         else:
             return self._search_recursive(node.right, value)
       
-
     def in_order_traversal(self, node: Node) -> list[int]:
         result = []
-        if node is not None:
+        if node:
             result += self.in_order_traversal(node.left)
             result.append(node.value)
             result += self.in_order_traversal(node.right)
@@ -104,18 +103,30 @@ class BST:
             self._serialize_recursively(node.right, serialized_tree)
 
     def deserialize(self, tree: str) -> None:
-        values = tree.split(",")
+        if not tree:
+            self.root = None
+            return
+        values = list(map(int, tree.split(",")))
         self.root = self._deserialize_recursively(values)
 
-    def _deserialize_recursively(self, values: list[str]) -> Node:
-        if not values or values[0] == "":
+    def _deserialize_recursively(self, values: list[int]) -> Node:
+        if not values:
             return None
-        value = int(values.pop(0))
+        value = values.pop(0)
         node = Node(value)
-        node.left = self._deserialize_recursively(values)
-        node.right = self._deserialize_recursively(values)
-        return node
+        
+        left_values = []
+        right_values = []
 
+        for char in values:
+            if char < value:
+                left_values.append(char)
+            elif char > value:
+                right_values.append(char)
+                
+        node.left = self._deserialize_recursively(left_values)
+        node.right = self._deserialize_recursively(right_values)
+        return node
 
 def main():
     bst = BST()
@@ -126,13 +137,11 @@ def main():
     bst.insert(7)
     bst.insert(1)
 
-    for i in range(50):
-        bst.insert(i)
-
     print()
     print("*** IN ORDER ***")
     print()
-    print(bst.in_order_traversal(bst.root))
+    if bst.root:
+        print(bst.in_order_traversal(bst.root))
 
     print()
     print("*** MINIMUM ***")
@@ -162,9 +171,9 @@ def main():
     print()
     print("*** DESERIALIZE ***")
     print()
-    serialized_tree = bst.serialize()
-    bst.deserialize(serialized_tree)
-    print(bst.in_order_traversal(bst.root))
+    serialized_tree = "1,8,4,2,7"
+    root = bst.deserialize(serialized_tree)
+    print(bst.in_order_traversal(root))
 
 if __name__ == "__main__":
     main()

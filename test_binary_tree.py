@@ -1,5 +1,5 @@
 import pytest
-from bst import BST, Node
+from bst import BST
 
 
 @pytest.fixture
@@ -36,8 +36,13 @@ def test_height(bst):
 def test_count_leaves(bst):
     assert bst.count_leaves() == 2
 
-def test_serialize_and_deserialize(bst):
+def test_serialize(bst):
+    serialized_tree = bst.serialize()
+    assert isinstance(serialized_tree, str)
+
+def test_deserialize(bst):
     serialized_tree = bst.serialize()
     new_bst = BST()
     new_bst.deserialize(serialized_tree)
-    assert serialized_tree == new_bst.serialize()
+    assert new_bst.in_order_traversal(new_bst.root) == bst.in_order_traversal(bst.root)
+    assert new_bst.serialize() == serialized_tree
